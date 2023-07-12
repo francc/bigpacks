@@ -11,39 +11,39 @@ that is where the name comes from.
 
 ## Specs
 
-**Easy to traverse**.
+### Easy to traverse
 This allows fast in-place parsing using static memory allocation,
 and skipping nested elements without parsing them.
 
-**Small encoder/decoder memory footprint**.
+### Small encoder/decoder memory footprint
 Uses 68 bytes of RAM with the
 default configuration that allows up to 4 element nesting levels (yes, bytes).
 Compiled for the ESP32, it uses about 1700 bytes of flash.
 
-**Easy translation to and from JSON**.
+### Easy translation to and from JSON
 Any valid JSON can be translated to BigPacks,
 but binary objects in BigPacks do not have a direct equivalent in JSON.
 
-**Similar encoded size to JSON**.
+### Similar encoded size to JSON
 Data encoded with BigPacks can be bigger or smaller
 than the equivalent JSON, depending on the mix of data types and value ranges,
 but they are about the same for real-world usage.
 
-**Update in-place**.
+### Update-in-place
 There is limited support for update-in-place for some
 data types, that could help reduce memory usage by avoiding the need for separate
 buffers.
 
-**32-bit aligned**.
+### 32-bit aligned
 All the data structures in BigPacks are 32-bit aligned, that is why it is
 not so tight, but this optimizes memory access on 32-bit architectures.
 
-**Little-endian only**.
+### Little-endian only
 Why? Because it is 2023 and it seems little-endian won
 the endianess war 🤷‍♂️.
 
 
-## Data types
+## Data Types
 
     None        Null value.
     Boolean     Boolean true or false value.
@@ -55,7 +55,7 @@ the endianess war 🤷‍♂️.
     Map         Sequence of key-value pairs.
 
 
-## Serialization format
+## Serialization Format
 
     packet      := element...
     element     := false | true | none | integer | float | list | map | string | binary
@@ -79,7 +79,8 @@ the endianess war 🤷‍♂️.
     binary      := 0xDnnnnnnn binary_data   //  where n is the length of binary_data expressed in 32-bit words
     binary_data := c_uint32_t...
 
-    **Syntax**
+**Syntax**
+
     <space> := sequence of objects
     ...     := repetition of zero or more objects
     |       := only one of the alternatives
@@ -88,7 +89,7 @@ the endianess war 🤷‍♂️.
     0x      := hexadecimal number encoded as little-endian
 
 
-## Serialization examples
+## Serialization Examples
 
     Python                                      BigPacks
     ------                                      ---------
@@ -246,3 +247,7 @@ length = BigPacks.pack(buffer, 0, data);
 
 console.log(unpacked);
 ```
+
+## To Do
+
+- Add examples on how to use postman with Javascript and with ESP-IDF.
