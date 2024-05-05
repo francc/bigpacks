@@ -54,6 +54,7 @@ export default class Postman {
     constructor(buffer_size = 8192, timeout = 10) {
         this.buffer_size = buffer_size;
         this.timeout = timeout;
+        this.debug = false;
         this.running = false;
         this.port = null;
         this.token = 0;
@@ -263,6 +264,7 @@ export default class Postman {
                     return response;
                 }
             }
+            console.log("method timeout!");
         }
         return [ -1, null, null ]
     }

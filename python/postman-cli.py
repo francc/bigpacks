@@ -73,7 +73,7 @@ try:
             response = pm.get(resource, content)
             if response[0] != PM_205_Content:
                 raise PostmanError(PM_RESPONSE_TEXT.get(response[0], hex(response[0])))
-            print(json.dumps(response[1], sort_keys=True, indent=4, cls=BytesEncoder))
+            print(json.dumps(response[1], sort_keys=False, indent=4, cls=BytesEncoder))
         elif action == "put" and len(sys.argv) > 4:
             response = pm.put(resource, content)
             if response[0] != PM_204_Changed:

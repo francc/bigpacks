@@ -3,23 +3,6 @@
 #  Postman - Copyright (c) 2022 Francisco Castro <http://fran.cc>
 #  SPDX short identifier: MIT
 #
-#  Permission is hereby granted, free of charge, to any person obtaining a
-#  copy of this software and associated documentation files (the "Software"),
-#  to deal in the Software without restriction, including without limitation
-#  the rights to use, copy, modify, merge, publish, distribute, sublicense,
-#  and/or sell copies of the Software, and to permit persons to whom the
-#  Software is furnished to do so, subject to the following conditions:
-#
-#  The above copyright notice and this permission notice shall be included in
-#  all copies or substantial portions of the Software.
-#
-#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-#  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-#  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-#  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-#  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-#  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-#  DEALINGS IN THE SOFTWARE.
 
 import time
 import crc32
@@ -153,7 +136,7 @@ class Postman:
         if len(response) > 1 and response[1] != self.token:
             raise PostmanError("Response token does not match request token.")
         self.token = (self.token + 1) & 0xFFFFFFFF
-        return response[0:1] + response[2:]
+        return response[0:1] + response[3:]
 
     def put(self, path, data=None):
         self.send(PM_PUT, self.token, path, data is not None, data)
@@ -161,7 +144,7 @@ class Postman:
         if len(response) > 1 and response[1] != self.token:
             raise PostmanError("Response token does not match request token.")
         self.token = (self.token + 1) & 0xFFFFFFFF
-        return response[0:1] + response[2:]
+        return response[0:1] + response[3:]
 
     def post(self, path, data=None):
         self.send(PM_POST, self.token, path, data is not None, data)
@@ -169,7 +152,7 @@ class Postman:
         if len(response) > 1 and response[1] != self.token:
             raise PostmanError("Response token does not match request token.")
         self.token = (self.token + 1) & 0xFFFFFFFF
-        return response[0:1] + response[2:]
+        return response[0:1] + response[3:]
 
     def delete(self, path, query=None):
         self.send(PM_DELETE, self.token, path, query is not None, query)
@@ -177,4 +160,4 @@ class Postman:
         if len(response) > 1 and response[1] != self.token:
             raise PostmanError("Response token does not match request token.")
         self.token = (self.token + 1) & 0xFFFFFFFF
-        return response[0:1] + response[2:]
+        return response[0:1] + response[3:]

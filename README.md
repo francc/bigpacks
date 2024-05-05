@@ -1,7 +1,7 @@
 # BigPacks
 
 **BigPacks** is a data serialization format designed for 32-bit microcontrollers.
-It aims at being minimal and fast, without obsessing over achieving the
+It aims at being minimal and fast without obsessing over achieving the
 smallest possible binary representation.
 
 This is the evolution of another serialization format for 8 and 16-bit
@@ -12,13 +12,13 @@ that is where the name comes from.
 ## Specs
 
 ### Easy to traverse
-This allows fast in-place parsing using static memory allocation,
+It allows fast in-place parsing using static memory allocation
 and skipping nested elements without parsing them.
 
 ### Small encoder/decoder memory footprint
-Uses 68 bytes of RAM with the
+The C implementation uses 68 bytes of RAM with the
 default configuration that allows up to 4 element nesting levels (yes, bytes).
-Compiled for the ESP32, it uses about 1700 bytes of flash.
+When compiled for the ESP32, it uses about 1700 bytes of flash.
 
 ### Easy translation to and from JSON
 Any valid JSON can be translated to BigPacks,
@@ -27,20 +27,15 @@ but binary objects in BigPacks do not have a direct equivalent in JSON.
 ### Similar encoded size to JSON
 Data encoded with BigPacks can be bigger or smaller
 than the equivalent JSON, depending on the mix of data types and value ranges,
-but they are about the same for real-world usage.
-
-### Update-in-place
-There is limited support for update-in-place for some
-data types, that could help reduce memory usage by avoiding the need for separate
-buffers.
+but it is about the same size for real-world usage.
 
 ### 32-bit aligned
-All the data structures in BigPacks are 32-bit aligned, that is why it is
+All the data structures in BigPacks are 32-bit aligned, which is why it is
 not so tight, but this optimizes memory access on 32-bit architectures.
 
 ### Little-endian only
 Why? Because it is 2023 and it seems little-endian won
-the endianess war 🤷‍♂️.
+the endianness war 🤷‍♂️.
 
 
 ## Data Types
@@ -140,7 +135,7 @@ the endianess war 🤷‍♂️.
 
 ## Postman
 
-A RESTish library based on BigPacks is also included in this project. It allows you to implement REST-like APIs over serial ports or other transports. It is being used in [SensorWatcher](https://movoki.com/setup) for communication between the Javascript code running in a web browser and the C code running in a ESP32, and also as an API over HTTP to upload measurements to backends.
+A RESTish library based on BigPacks is also included in this project. It allows you to implement REST-like APIs over serial ports or other transports. It is being used in [SensorWatcher](https://github.com/movoki/sensor-watcher) for communication between the Javascript code running in a web browser and the C code running in a ESP32, and also as an API over HTTP to upload measurements to backends.
 
 
 ## Usage

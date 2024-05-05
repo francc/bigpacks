@@ -1,3 +1,6 @@
+// Copyright (c) 2022-2023 José Francisco Castro <me@fran.cc>
+// SPDX short identifier: MIT
+
 #ifndef bigpacks_h
 #define bigpacks_h
 
@@ -22,7 +25,7 @@
 
 #define BP_INVALID_LENGTH      0xFFFFFFFF
 
-#define BP_MAX_CURSOR_LEVELS   4
+#define BP_MAX_CURSOR_LEVELS   8
 
 
 typedef uint32_t bp_type_t;
@@ -60,11 +63,12 @@ bool bp_is_number(bp_pack_t *pack);
 bool bp_is_block(bp_pack_t *pack);
 bool bp_is_container(bp_pack_t *pack);
 
+bool bp_is_empty(bp_pack_t *pack);
+
 void bp_set_buffer(bp_pack_t *pack, bp_type_t * buffer, bp_length_t length);
 bp_length_t bp_free_space(bp_pack_t *pack);
 bp_length_t bp_get_offset(bp_pack_t *pack);
 bool bp_set_offset(bp_pack_t *pack, bp_length_t offset);
-bool bp_set_offset_then_next(bp_pack_t *pack, bp_length_t offset);
 
 bool bp_has_next(bp_pack_t *pack);
 bool bp_next(bp_pack_t *pack);
@@ -92,11 +96,8 @@ bool bp_put_binary(bp_pack_t *pack, bp_type_t *value, bp_length_t length);
 bool bp_create_container(bp_pack_t *pack, bp_type_t type);
 bool bp_finish_container(bp_pack_t *pack);
 
+void bp_reset_cursor(bp_pack_t *pack);
 bool bp_save_cursor(bp_pack_t *pack);
 bool bp_restore_cursor(bp_pack_t *pack);
-bool bp_copy_element(bp_pack_t *dst, bp_pack_t *src);
-
-bool bp_update_float(bp_pack_t *pack, bp_float_t value);
-bool bp_update_integer(bp_pack_t *pack, bp_integer_t value);
 
 #endif

@@ -1,3 +1,6 @@
+// Copyright (c) 2024 José Francisco Castro <me@fran.cc>
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #ifndef framer_h
 #define framer_h
 

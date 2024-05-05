@@ -129,7 +129,10 @@ def unpack(data):
         else:
             raise ValueError("Float number too big")
     elif content_type == BP_STRING:
-        obj = content_raw.decode("utf8").split('\0',1)[0]
+        try:
+            obj = content_raw.decode("utf8").split('\0',1)[0]
+        except:
+            obj = ""
     elif content_type == BP_BINARY:
         obj = content_raw
     elif content_type == BP_LIST:

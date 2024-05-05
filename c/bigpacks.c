@@ -1,23 +1,5 @@
-//  BigPacks - Copyright (c) 2022 Francisco Castro <http://fran.cc>
-//  SPDX short identifier: MIT
-//
-//  Permission is hereby granted, free of charge, to any person obtaining a
-//  copy of this software and associated documentation files (the "Software"),
-//  to deal in the Software without restriction, including without limitation
-//  the rights to use, copy, modify, merge, publish, distribute, sublicense,
-//  and/or sell copies of the Software, and to permit persons to whom the
-//  Software is furnished to do so, subject to the following conditions:
-//
-//  The above copyright notice and this permission notice shall be included in
-//  all copies or substantial portions of the Software.
-//
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-//  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-//  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-//  DEALINGS IN THE SOFTWARE.
+// Copyright (c) 2022-2023 José Francisco Castro <me@fran.cc>
+// SPDX short identifier: MIT
 
 #include "bigpacks.h"
 
@@ -37,6 +19,8 @@ bool bp_is_boolean(bp_pack_t *pack) { return (pack->cursor->element_start[0] & B
 bool bp_is_number(bp_pack_t *pack) { return (pack->cursor->element_start[0] & BP_TYPE_GROUP_MASK) == BP_INTEGER; };
 bool bp_is_block(bp_pack_t *pack) { return (pack->cursor->element_start[0] & BP_TYPE_GROUP_MASK) == BP_STRING; };
 bool bp_is_container(bp_pack_t *pack) { return (pack->cursor->element_start[0] & BP_TYPE_GROUP_MASK) == BP_LIST; };
+
+bool bp_is_empty(bp_pack_t *pack) { return pack->cursor->element_length == 1; };
 
 void bp_set_buffer(bp_pack_t *pack, bp_type_t * buffer, bp_length_t length)
 {
@@ -62,11 +46,6 @@ bool bp_set_offset(bp_pack_t *pack, bp_length_t offset)
     return false;
 }
 
-bool bp_set_offset_then_next(bp_pack_t *pack, bp_length_t offset)
-{
-    return bp_set_offset(pack, offset) && bp_next(pack);
-}
-
 bool bp_has_next(bp_pack_t *pack) {
     return pack->cursor->element_start + pack->cursor->element_length < pack->cursor->parent_start + pack->cursor->parent_length;
 }
@@ -84,7 +63,7 @@ bool bp_next(bp_pack_t *pack)
 
 bool bp_open(bp_pack_t *pack)
 {
-    if(bp_is_container(pack) && pack->cursor->element_length != 1 && pack->cursor < &(pack->stack[BP_MAX_CURSOR_LEVELS - 1])) {
+    if(bp_is_container(pack) && pack->cursor < &(pack->stack[BP_MAX_CURSOR_LEVELS - 1])) {
         (pack->cursor + 1)->parent_start = pack->cursor->element_start + 1;
         (pack->cursor + 1)->parent_length = pack->cursor->element_length - 1;
         (pack->cursor + 1)->element_start = pack->cursor->element_start;
@@ -246,7 +225,7 @@ bool bp_put_big_integer(bp_pack_t *pack, bp_big_integer_t value)
 {
     if(bp_free_space(pack) >= 1 + sizeof(bp_big_integer_t) / sizeof(bp_type_t)) {
         pack->cursor->element_start[0] = BP_INTEGER | sizeof(bp_big_integer_t) / sizeof(bp_type_t);
-        pack->cursor->element_start[1] = (bp_type_t) (value & 0xFFFFFFFF);    ///
+        pack->cursor->element_start[1] = (bp_type_t) (value & 0xFFFFFFFF);
         pack->cursor->element_start[2] = (bp_type_t) (value >> sizeof(bp_type_t) * 8);
         pack->cursor->element_start += 1 + sizeof(bp_big_integer_t) / sizeof(bp_type_t);
         pack->cursor->element_length = 0;
@@ -260,7 +239,7 @@ bool bp_put_float(bp_pack_t *pack, bp_float_t value)
 {
     if(bp_free_space(pack) >= 1 + sizeof(bp_float_t) / sizeof(bp_type_t)) {
         pack->cursor->element_start[0] = BP_FLOAT | sizeof(bp_float_t) / sizeof(bp_type_t);
-        pack->cursor->element_start[1] = *((bp_type_t *) (&value));   ///  :-|
+        pack->cursor->element_start[1] = *((bp_type_t *) (&value));   /// 🤪
         pack->cursor->element_start += 1 + sizeof(bp_float_t) / sizeof(bp_type_t);
         pack->cursor->element_length = 0;
         return true;
@@ -345,6 +324,11 @@ bool bp_finish_container(bp_pack_t *pack)
         return false;
 }
 
+void bp_reset_cursor(bp_pack_t *pack)
+{
+    pack->cursor = &(pack->stack[0]);
+}
+
 bool bp_save_cursor(bp_pack_t *pack)
 {
     if(pack->cursor < &(pack->stack[BP_MAX_CURSOR_LEVELS - 1])) {
@@ -363,37 +347,3 @@ bool bp_restore_cursor(bp_pack_t *pack)
 {
     return bp_close(pack);
 }
-
-bool bp_copy_element(bp_pack_t *dst, bp_pack_t *src)
-{
-    if(bp_free_space(dst) >= src->cursor->element_length) {
-        for(bp_length_t i = 0; i != src->cursor->element_length; i++)
-            dst->cursor->element_start[i] = src->cursor->element_start[i];
-        dst->cursor->element_length = 0;
-        bp_next(dst);
-        return true;
-    }
-    else
-        return false;
-}
-
-bool bp_update_float(bp_pack_t *pack, bp_float_t value)
-{
-    if(bp_is_float(pack)) {
-        pack->cursor->element_start[1] = *((bp_type_t *) (&value));   ///  :-|
-        return true;
-    }
-    else
-        return false;
-}
-
-bool bp_update_integer(bp_pack_t *pack, bp_integer_t value)
-{
-    if(bp_is_integer(pack)) {
-        pack->cursor->element_start[1] = (bp_type_t) value;
-        return true;
-    }
-    else
-        return false;
-}
-
